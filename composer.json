@@ -20,7 +20,8 @@
     ],
     "support": {
         "issues": "https://github.com/clarkwinkelmann/flarum-ext-clippy/issues",
-        "source": "https://github.com/clarkwinkelmann/flarum-ext-clippy"
+        "source": "https://github.com/clarkwinkelmann/flarum-ext-clippy",
+        "forum": "https://discuss.flarum.org/d/26625"
     },
     "autoload": {
         "psr-4": {
