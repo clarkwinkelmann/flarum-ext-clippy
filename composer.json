@@ -1,0 +1,41 @@
+{
+    "name": "clarkwinkelmann/flarum-ext-clippy",
+    "description": "Add Clippy agent to your forum.",
+    "keywords": [
+        "flarum"
+    ],
+    "type": "flarum-extension",
+    "license": "MIT",
+    "require": {
+        "flarum/core": "^0.1.0-beta.16",
+        "ext-json": "*"
+    },
+    "authors": [
+        {
+            "name": "Clark Winkelmann",
+            "email": "clark.winkelmann@gmail.com",
+            "homepage": "https://clarkwinkelmann.com/",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/clarkwinkelmann/flarum-ext-clippy/issues",
+        "source": "https://github.com/clarkwinkelmann/flarum-ext-clippy"
+    },
+    "autoload": {
+        "psr-4": {
+            "ClarkWinkelmann\\Clippy\\": "src/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Clippy",
+            "category": "feature",
+            "icon": {
+                "name": "fas fa-paperclip",
+                "backgroundColor": "#684ba6",
+                "color": "#fff"
+            }
+        }
+    }
+}

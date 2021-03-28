@@ -1,0 +1,14 @@
+clarkwinkelmann-clippy:
+    admin:
+        settings:
+            cdn: CDN
+            cdn-options:
+                s3: Amazon S3
+                jsdelivr: jsDelivr
+                custom: Custom
+            path: Custom CDN Path
+            path-help: A fully qualified URL without trailing slash to a folder containing the content of the <a>clippy.js repository</a>.
+        events:
+            name: Event
+            animation: Animation
+            text: Text
