@@ -55,7 +55,7 @@ app.initializers.add('clarkwinkelmann-clippy', () => {
 
     extend(ForumApplication.prototype, 'mount', () => {
         clippy.BASE_PATH = app.forum.attribute('clippyAgentPath');
-        clippy.load('Clippy', a => {
+        clippy.load(app.forum.attribute('clippyAgent') || 'Clippy', a => {
             agent = a;
             agent.show();
 

@@ -12,6 +12,7 @@ return [
         ->css(__DIR__ . '/resources/less/forum.less'),
 
     (new Extend\Frontend('admin'))
+        ->content(IncludeClippyAssets::class)
         ->js(__DIR__ . '/js/dist/admin.js')
         ->css(__DIR__ . '/resources/less/admin.less'),
 
@@ -21,6 +22,7 @@ return [
         ->attributes(ForumAttributes::class),
 
     (new Extend\Settings())
+        ->serializeToForum('clippyAgent', 'clippy.agent')
         ->serializeToForum('clippyEvents', 'clippy.events', function ($value) {
             return json_decode($value, true);
         }),
