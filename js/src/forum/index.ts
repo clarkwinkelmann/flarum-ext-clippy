@@ -1,5 +1,5 @@
 import {extend, override} from 'flarum/common/extend';
-import app from 'flarum/app';
+import app from 'flarum/forum/app';
 import ForumApplication from 'flarum/forum/ForumApplication';
 import IndexPage from 'flarum/forum/components/IndexPage';
 import UserPage from 'flarum/forum/components/UserPage';
@@ -13,21 +13,20 @@ import DiscussionPage from 'flarum/forum/components/DiscussionPage';
 import ComposerState from 'flarum/forum/states/ComposerState';
 import Discussion from 'flarum/common/models/Discussion';
 import Post from 'flarum/common/models/Post';
-
-/* global clippy, flarum */
+import {Agent, EventConfiguration} from '../../shims';
 
 app.initializers.add('clarkwinkelmann-clippy', () => {
-    let agent;
-    const eventQueue = [];
+    let agent: Agent;
+    const eventQueue: string[] = [];
 
-    function runEvent(eventName) {
+    function runEvent(eventName: string) {
         if (!agent) {
             // Queue for events triggering before the agent is ready
             eventQueue.push(eventName);
             return;
         }
 
-        const definitions = app.forum.attribute('clippyEvents');
+        const definitions: EventConfiguration = app.forum.attribute('clippyEvents');
 
         if (!definitions) {
             return;
@@ -77,7 +76,7 @@ app.initializers.add('clarkwinkelmann-clippy', () => {
         runEvent('page.discussion');
     });
 
-    extend(UserPage.prototype, 'oninit', function () {
+    extend(UserPage.prototype, 'oninit', function (this: UserPage) {
         if (this.skipSkippyEvent) {
             return;
         }
@@ -85,7 +84,7 @@ app.initializers.add('clarkwinkelmann-clippy', () => {
         runEvent('page.profile');
     });
 
-    override(SettingsPage.prototype, 'oninit', function (original, vnode) {
+    override(SettingsPage.prototype, 'oninit', function (this: SettingsPage, original: any, vnode: any) {
         runEvent('page.settings');
 
         // Because SettingsPage extends UserPage, we don't want the two events to trigger
@@ -113,25 +112,25 @@ app.initializers.add('clarkwinkelmann-clippy', () => {
     extend(DiscussionComposer.prototype, 'oninit', function () {
         runEvent('composer.discussion.open');
     });
-    extend(DiscussionComposer.prototype, 'onsubmit', function () {
+    extend(DiscussionComposer.prototype, 'onsubmit', function (this: DiscussionComposer) {
         this.composer.nextHideIsSubmit = true;
     });
 
     extend(ReplyComposer.prototype, 'oninit', function () {
         runEvent('composer.reply.open');
     });
-    extend(ReplyComposer.prototype, 'onsubmit', function () {
+    extend(ReplyComposer.prototype, 'onsubmit', function (this: ReplyComposer) {
         this.composer.nextHideIsSubmit = true;
     });
 
     extend(EditPostComposer.prototype, 'oninit', function () {
         runEvent('composer.reply.open');
     });
-    extend(EditPostComposer.prototype, 'onsubmit', function () {
+    extend(EditPostComposer.prototype, 'onsubmit', function (this: EditPostComposer) {
         this.composer.nextHideIsSubmit = true;
     });
 
-    override(ComposerState.prototype, 'hide', function (original) {
+    override(ComposerState.prototype, 'hide', function (this: ComposerState, original: any) {
         if (this.nextHideIsSubmit) {
             this.nextHideIsSubmit = false;
 
@@ -159,7 +158,7 @@ app.initializers.add('clarkwinkelmann-clippy', () => {
         original();
     });
 
-    extend(Discussion.prototype, 'save', function (returnValue, attributes) {
+    extend(Discussion.prototype, 'save', function (returnValue: any, attributes: any) {
         if (!attributes || !attributes.hasOwnProperty('subscription')) {
             return;
         }
@@ -174,7 +173,7 @@ app.initializers.add('clarkwinkelmann-clippy', () => {
         }
     });
 
-    extend(Post.prototype, 'save', function (returnValue, attributes) {
+    extend(Post.prototype, 'save', function (returnValue: any, attributes: any) {
         if (!attributes || !attributes.hasOwnProperty('isLiked')) {
             return;
         }

@@ -1,10 +1,10 @@
-import app from 'flarum/app';
+import app from 'flarum/admin/app';
 import Select from 'flarum/common/components/Select';
 import {extend} from 'flarum/common/extend';
+import withAttr from 'flarum/common/utils/withAttr';
 import ExtensionPage from 'flarum/admin/components/ExtensionPage';
 import arrayOfStringsToSelectOptions from './arrayOfStringsToSelectOptions';
-
-/* global m, clippy */
+import {Agent, EventConfiguration} from '../../shims';
 
 const AGENTS = [
     'Clippy',
@@ -42,9 +42,10 @@ const EVENTS = [
 ];
 
 app.initializers.add('clarkwinkelmann-clippy', () => {
-    let agent;
+    let agent: Agent | null = null;
 
-    extend(ExtensionPage.prototype, 'oninit', function () {
+    extend(ExtensionPage.prototype, 'oninit', function (this: ExtensionPage) {
+        // @ts-ignore missing type-hints for attrs.id in Flarum
         if (this.attrs.id !== 'clarkwinkelmann-clippy') {
             return;
         }
@@ -77,7 +78,7 @@ app.initializers.add('clarkwinkelmann-clippy', () => {
             default: 's3',
             label: app.translator.trans('clarkwinkelmann-clippy.admin.settings.cdn'),
         })
-        .registerSetting(function () {
+        .registerSetting(function (this: ExtensionPage) {
             return m('.Form-group', [
                 m('label', app.translator.trans('clarkwinkelmann-clippy.admin.settings.path')),
                 m('.helpText', app.translator.trans('clarkwinkelmann-clippy.admin.settings.path-help', {
@@ -94,18 +95,20 @@ app.initializers.add('clarkwinkelmann-clippy', () => {
                 }),
             ]);
         })
-        .registerSetting(function () {
+        .registerSetting(function (this: ExtensionPage) {
             return m('.Form-group', [
                 m('label', app.translator.trans('clarkwinkelmann-clippy.admin.settings.agent')),
                 m('.helpText', app.translator.trans('clarkwinkelmann-clippy.admin.settings.agent-help')),
                 Select.component({
                     value: this.setting('clippy.agent', 'Clippy')(),
                     options: arrayOfStringsToSelectOptions(AGENTS),
-                    onchange: value => {
+                    onchange: (value: string) => {
                         this.setting('clippy.agent')(value);
 
-                        agent.hide();
-                        agent = null;
+                        if (agent) {
+                            agent.hide();
+                            agent = null;
+                        }
 
                         clippy.load(value, a => {
                             agent = a;
@@ -144,9 +147,9 @@ app.initializers.add('clarkwinkelmann-clippy', () => {
                 }),
             ]);
         })
-        .registerSetting(function () {
+        .registerSetting(function (this: ExtensionPage) {
             const settingsKey = 'clippy.events';
-            let events;
+            let events: EventConfiguration = {};
 
             try {
                 events = JSON.parse(this.setting(settingsKey)());
@@ -177,7 +180,7 @@ app.initializers.add('clarkwinkelmann-clippy', () => {
                             options: arrayOfStringsToSelectOptions(agent ? agent.animations() : [], {
                                 none: '---',
                             }),
-                            onchange: value => {
+                            onchange: (value: string) => {
                                 if (value === 'none') {
                                     // If there's a text, we delete just the animation
                                     // If there's neither text nor animation, we remove the whole event from the list
@@ -202,9 +205,7 @@ app.initializers.add('clarkwinkelmann-clippy', () => {
                         m('td', m('input.FormControl', {
                             type: 'text',
                             value: (events[eventName] && events[eventName].text) || '',
-                            onchange: event => {
-                                const {value} = event.target;
-
+                            onchange: withAttr('value', (value: string) => {
                                 if (value) {
                                     if (agent) {
                                         //agent.stop();
@@ -223,7 +224,7 @@ app.initializers.add('clarkwinkelmann-clippy', () => {
                                 }
 
                                 this.setting(settingsKey)(JSON.stringify(events));
-                            },
+                            }),
                         })),
                     ]))),
                 ]),
